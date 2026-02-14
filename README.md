@@ -35,5 +35,9 @@ To import your team without typing:
 3.  Copy the **System Prompt** found in the "ℹ️ AI Prompt & Help" tab of the app.
 4.  Paste the code it generates into the sidebar of this app.
 
+## To do
+1. Create a more efficient team data creator prompt.
+2. Some ordering in the names that Ai can get (ex. "Horton Tucker Talen" to "Horton-Tucker Talen" )
+
 ---
 *Built with [Streamlit](https://streamlit.io) & Python.*
