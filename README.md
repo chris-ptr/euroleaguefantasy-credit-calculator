@@ -2,6 +2,9 @@
 
 A powerful Streamlit analytics dashboard for Euroleague Fantasy managers. This tool helps you calculate credit changes, visualize team performance, and automate team imports using AI.
 
+# The Idea
+
+The motivation behind this app is simple: the waiting game. In EuroLeague Fantasy, increasing your budget is crucial for long-term success, but the official game only updates player credits the following day. While it's possible to calculate these changes manually with a "pen and paper" during live matches, through the players profile or the rounds perfomances tab in the app, it's a tedious and time-consuming process. This tool eliminates that lag, giving you instant insight into your team's credit performance , so you can plan your next moves without the wait.
 
 ## What This App Does
 
