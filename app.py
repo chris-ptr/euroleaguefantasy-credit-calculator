@@ -331,21 +331,411 @@ else:
         )
         
         st.code("""
-Please extract the fantasy basketball team data from this image and format it as a raw Python list of dictionaries.
+**Role:** You are a specialized OCR and data extraction assistant for EuroLeague Fantasy Basketball.
 
-Follow these strict formatting rules so my code can parse it:
-1. Output ONLY a Python list starting with `[` and ending with `]`. Do not include variable assignments or markdown formatting.
-2. Each player/coach must be a dictionary with keys: "name", "role", "displayed_score".
-3. "name": Full name string (e.g., "Vezenkov Sasha").
-4. "role": One of: "Captain", "Starter", "Bench", "Coach".
-5. "displayed_score":
-   - If numeric, use the float (e.g., 17.60).
-   - If "T2"/pending, use Python `None`.
-6. CRITICAL: Verify spelling against this official list: https://pastebin.com/TxsreteU
+**Task:** Extract the team data from the attached image into a raw Python list of dictionaries.
 
-Example output:
+### 1. VISUAL LAYOUT & ROLE MAPPING RULES
+* **Top Half (Basketball Court):** The 5 players physically on the court are **"Starter"**.
+    * *Exception:* If a player has a **'C' badge** (usually yellow/green) next to them, their role is **"Captain"**.
+* **Bottom Left (Labeled "6th"):** This player is the 6th Man. Map their role to **"Starter"**.
+* **Bottom Left (Labeled "HC" / Suit Icon):** This is the Head Coach. Map their role to **"Coach"**.
+* **Bottom Right (Purple Box / Labeled "Bench"):** These 4 players are the **"Bench"**.
+
+### 2. SPELLING & IDENTITY RULES
+* **CRITICAL:** You must match the names found in the image to the **EXACT spelling** provided in the "Reference List" below.
+* **Do Not Autocorrect:** Use the specific spelling from the list even if it looks grammatically incorrect (e.g., use "Horton Tucker Talen" without hyphens if the list says so; use "Taylor Kameron" instead of "Kamar").
+* **Visual Disambiguation (CRITICAL):** If the OCR detects a name that matches multiple entries in the list (e.g., "Jones", "Taylor", "Brown"), you **MUST** look at the player's jersey color/logo in the image to select the correct specific player from the list.
+    * *Red/White Stripe* = Olympiacos (OLY) -> e.g., Jones Tyrique, Vezenkov Sasha
+    * *Orange* = Valencia (VBC) -> e.g., Taylor Kameron, Ojeleye Semi
+    * *Dark Blue/Black* = Anadolu Efes (EFS) / Paris (PAR) / Partizan (PAR) -> e.g., Jones Carlik, Lundberg Iffe
+    * *Yellow* = Maccabi (MTA) / Fenerbahce (FBB) -> e.g., Baldwin IV Wade, Colson Bonzie
+    * *Blue/Red* = Barcelona (BAR) / Baskonia (BKN)
+
+### 3. DATA EXTRACTION
+* **displayed_score:** Extract the number exactly as shown (as a float). 
+    * If the score is pending (e.g., "T2", "-", or empty), return `None`.
+
+### 4. OUTPUT FORMAT & EXAMPLES
+Provide **ONLY** a raw Python list of dictionaries. No markdown formatting (like ```json), no conversational text.
+
+**Required JSON Structure:**
 [
-    {"name": "James Mike", "role": "Captain", "displayed_score": 22.5},
-    {"name": "Ataman Ergin", "role": "Coach", "displayed_score": None}
+  {"name": "Exact Name From List", "role": "RoleString", "displayed_score": FloatOrNone},
+  ...
 ]
-        """, language="text")
+
+**Specific Role Examples:**
+* **Captain:** `{"name": "Vezenkov Sasha", "role": "Captain", "displayed_score": 55.0}`
+* **Starter (Court & 6th Man):** `{"name": "Kabengele Mfiondu", "role": "Starter", "displayed_score": 35.2}`
+* **Bench:** `{"name": "Clyburn Will", "role": "Bench", "displayed_score": 4.0}`
+* **Coach:** `{"name": "Laso Pablo", "role": "Coach", "displayed_score": 25.0}`
+
+### 5. REFERENCE LIST (Source of Truth)
+Vezenkov Sasha
+Francisco Sylvain
+James Mike
+Milutinov Nikola
+Bryant Elijah
+Moneke Chima
+Nunn Kendrick
+Tavares Walter
+Shengelia Tornike
+Baldwin IV Wade
+Wright IV McKinley
+Campazzo Facundo
+Kabengele Mfiondu
+Punter Kevin
+Jones Tyrique
+Hifi Nadir
+Hoard Jaylen
+Petrusev Filip
+Lyles Trey
+Montero Jean
+Leday Zach
+Oturu Dan
+Clyburn Will
+Nwora Jordan
+Horton Tucker Talen
+Sloukas Kostas
+Wright Moses
+De Colo Nando
+Diallo Alpha
+Shields Shavon
+Taylor Kameron
+Walker IV Lonnie
+Miller-McIntyre Codi
+Mirotic Nikola
+Lessort Mathias
+Hall Donta
+Hernangomez Juancho
+Luwawu-Cabarrot Timothe
+Maledon Theo
+Larkin Shane
+Dorsey Tyler
+Jones Carlik
+Tubelis Azuolas
+Nebo Josh
+Sorkin Roman
+Bacon Dwayne
+Bonga Isaac
+Hezonja Mario
+Robinson Justin
+Edwards Carsen
+Leaf TJ
+Guduric Marko
+Theis Daniel
+Micic Vasilije
+Musa Dzanan
+Thompson Darius
+Butler Jared
+Jones Chris
+Angola Braian
+Forrest Trent
+Holmes Richaun
+Watson Glynn
+Weiler-Babb Nick
+Brown Sterling
+Obst Andreas
+Okobo Elie
+Payne Cameron
+Morgan Matthew
+Osman Cedi
+Lucic Vladimir
+Rhoden Jared
+Motley Johnathan
+Bolomboy Joel
+Williams-Goss Nigel
+Brooks Armoni
+Poirier Vincent
+Satoransky Tomas
+Jokubaitis Rokas
+Shorts TJ
+Booker Devin
+Evans Keenan
+Brissett Oshae
+Izundu Ebuka
+Blakeney Antonio
+Dimitrijevic Neno
+Grant Jerian
+Melli Nicolo
+Reuvers Nathan
+Vildoza Luca
+Omoruyi Eugene
+Simmons Kobi
+Okeke Chuma
+Fernando Bruno
+Niang Saliou
+Alston Jr Derrick
+Vesely Jan
+Bolmaro Leandro
+Washington Duane
+Diallo Hamidou
+Pradilla Jaime
+Dinwiddie Spencer
+Fournier Evan
+Lundberg Iffe
+Ojeleye Semi
+Cordinier Isaia
+Silva Chris
+Loyd Jordan
+Moore Omari
+Walkup Thomas
+Osmani Ercan
+Sedekerskis Tadas
+Avramovic Aleksa
+Ellis Quinn
+Hernangomez Willy
+Joseph Cory
+Mike Isiaha
+Jones Kai
+Colson Bonzie
+Diouf Mouhamet
+Dowtin Jr Jeffrey
+Heurtel Thomas
+Ndiaye Mbaye
+Costello Matthew
+Howard Markus
+Lee Saben
+Strazel Matthew
+Clark III Jimmy
+Ryan Matt
+Laprovittola Nicolas
+Blossomgame Jaron
+Ward Tyson
+Biberovic Tarik
+Caboclo Bruno
+Faried Kenneth
+Morris Monte
+Gabriel Wenyen
+Hall Devon
+Deck Gabriel
+Peters Alec
+Willis Derek
+Fall Moustapha
+Lo Maodo
+Milton Shake
+Boston Jr Brandon
+Diakite Mamadi
+Jessup Justinian
+Blatt Tamir
+Jekiri Tonye
+Hayes Kevarrius
+Kalinic Nikola
+Ulanovas Edgaras
+Brown Lorenzo
+Badio Brancou
+Cancar Vlatko
+Malcolm Collin
+Osetkowski Dylan
+Stevens Lamar
+Faye Mouhamed
+Yurtseven Omer
+Ellis Boogie
+Dozier PJ
+Sako Neal
+Brizuela Dario
+Graham Devonte
+Parker Jabari
+Voigtmann Johannes
+Kurucs Rodions
+Parra Joel
+Samanic Luka
+Seljaas Zachary
+Smailagic Alen
+Spagnolo Matteo
+Wilbekin Scottie
+Dokossi Allan
+Key Braxton
+Mason Nate
+Rivero Jasiel
+Da Silva Oscar
+Radzevicius Gytis
+Jallow Karim
+M'Baye Amath
+Carter Tyson
+Len Alex
+Nowell Markquis
+McCormack David
+Kamenjas Kenan
+Mitoglou Konstantinos
+Sleva Dustin
+Anderson Justin
+Traore Armel
+Jovic Stefan
+Madar Yam
+Motiejunas Donatas
+Pajola Alessandro
+Santos Marcio
+Butkevicius Arnas
+Garuba Usman
+Nedovic Nemanja
+Ennis Tyler
+Norris Miles
+Smits Rolands
+Bertans Davis
+Diarra Aliou
+Diop Khalifa
+Wainright Ish
+Harrison Shaquille
+Feliz Andres
+Morgan Jeremy
+Odiase Tai
+Vautier Bastien
+Calathes Nick
+Hankins Zachary
+Jantunen Mikael
+Taylor Brandon
+Bacot Jr Armando
+Makoundou Yoan
+Papagiannis Georgios
+Swider Cole
+Birutis Laurynas
+Rathan-Mayes Xavier
+Dessert Brice
+Armstrong Taran
+Ginat Tomer
+Ntilikina Frank
+Birch Khem
+Abalde Alberto
+Brazdeikis Ignas
+Eboua Paul
+Hackett Daniel
+Lopez-Arostegui Xabi
+Michineau David
+Puerto Josep
+Beaubois Rodrigue
+Sirvydis Deividas
+Akele Nicola
+Ayayi Joel
+Bako Ismael
+Cavaliere Leopold
+Frisch Clement
+Happ Ethan
+Lakic Arijan
+Mannion Niccolo
+Massa Bodian
+Baldwin Kamar
+Zagars Arturs
+Marinkovic Vanja
+Mckissic Shaquielle
+Papanikolaou Kostas
+Toliopoulos Vassilis
+Birsen Metecan
+Ajinca Melvin
+Iroegbu Ike
+Dibartolomeo John
+Fall Youssoupha
+Abass Awudu
+Ferrari Francesco
+Jaiteh Mam
+Nunez Juan
+Cale Myles
+Giedraitis Dovydas
+Herrera Sebastian
+Hollatz Justus
+Hommes Daulton
+Ouattara Yakuba
+Trifunovic Uros
+Dunston Bryant
+Giffey Niels
+Hazer Sehmus
+Bitim Onuralp
+Kondic Kosta
+Prepelic Klemen
+Procida Gabriele
+De Larrea Sergio
+Dobric Ognjen
+Ricci Giampaolo
+Rogkavopoulos Nikolaos
+Accorsi Matteo
+Almansa Izan
+Stojkovic Lazar
+Andjusic Danilo
+Antetokounmpo Kostas
+Tarpey Terry
+Timor Bar
+Tonut Stefano
+Bango Jilson
+Begarin Juhann
+Villar Rafa
+Blayzer Oz
+Bosnjakovic Mitar
+Yildizli Burakcan
+Yilmaz Erkan
+Ziv Iftach
+Rubstavicius Mantas
+Canaan Isaiah
+Atamna Adam
+Canka Abramo
+Joksimovic Stefan
+Nogues Isaac
+Nedeljkovic Aleksej
+Dos Santos Yago
+Dangubic Nemanja
+Grinvalds Gunars
+Davidovac Dejan
+Gur Lavi
+Muurinen Miikka
+Ngouama Mehdy
+Sanli Sertac
+Keita Sayon
+Wade Marvyn
+Diop Ousmane
+Mikalauskas Kajus
+Tote Leonardo
+Hrabar Vit
+Radanov Aleksa
+Eksioglu Mert
+Kusturica Nikola
+Flaccadori Diego
+Grigonis Marius
+Harris Elias
+Ilic Dalibor
+Jackson Edwin
+Kalaitzakis Panagiotis
+Kouzeloglou Ioannis
+Kramer David
+Kratzer Leon
+Larentzakis Giannoulis
+Lighty David
+Llull Sergio
+Mahmutoglu Melih
+Marcos Juani
+Mestoglu Yigit Hamza
+Miljenovic Stefan
+Moungalla Ilian
+Mutaf David
+Nakic Mario
+Netzipoglou Omiros
+Palatin Guy
+Plavsic Uros
+Pokusevski Aleksej
+Radosic Ognjen
+Ravena Thirdy
+Rayman William
+Samodurov Alexandros
+Segev Itay
+Sestina Nathan
+Shahrvin Enzo
+Sima Yankuba
+Bartzokas Georgios
+Jasikevicius Saras
+Scariolo Sergio
+Ataman Ergin
+Martinez Pedro
+Spanoulis Vassilis
+Masiulis Tomas
+Pascual Xavi
+Itoudis Dimitris
+Obradovic Sasa
+Laso Pablo
+Poeta Giuseppe
+Golemac Jurica
+Pesic Svetislav
+Kattash Oded
+Tabellini Francesco
+Penarroya Joan
+Poupet Pierric
+Ivanovic Dusko
+Galbiati Paolo""", language="text")
