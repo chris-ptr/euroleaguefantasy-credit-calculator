@@ -721,4 +721,26 @@ Sestina Nathan,MIL
 Shahrvin Enzo,PRS
 Sima Yankuba,VAL
                 
+Coach,Team
+Bartzokas Georgios,OLY
+Jasikevicius Saras,FNB
+Scariolo Sergio,RMB
+Ataman Ergin,PAO
+Martinez Pedro,VAL
+Spanoulis Vassilis,ASM
+Masiulis Tomas,ZAL
+Pascual Xavi,BAR
+Itoudis Dimitris,HTA
+Obradovic Sasa,CZV
+Laso Pablo,EFS
+Poeta Giuseppe,MIL
+Golemac Jurica,DUB
+Pesic Svetislav,BAY
+Kattash Oded,MAC
+Tabellini Francesco,PBB
+Penarroya Joan,PAR
+Galbiati Paolo,BKN
+Ivanovic Dusko,VIR
+Poupet Pierric,ASV
+                
 """, language="text")
