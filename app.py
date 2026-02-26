@@ -720,6 +720,7 @@ Segev Itay,HTA
 Sestina Nathan,MIL
 Shahrvin Enzo,PRS
 Sima Yankuba,VAL
+Hayes-davis Nigel,PAO
                 
 Coach,Team
 Bartzokas Georgios,OLY
